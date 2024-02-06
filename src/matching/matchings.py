@@ -1,5 +1,7 @@
 """A collection of dictionary-like objects for storing matchings."""
 
+import pandas
+
 from matching import BaseMatching
 from matching.players import Player
 
@@ -61,3 +63,43 @@ class MultipleMatching(BaseMatching):
             other.matching = player
 
         self._data[player] = new
+
+class ManyToManyMatching(BaseMatching):
+    """
+    @summary Matching class for games with many-to-many matches,
+       e.g. book, authors
+    @note: Although this class inherits `BaseMatching` class, which inherits Python's `dict`,
+       this class relies the dictionary capability on `pandas.DataFrame`.
+
+    Parameters
+    ----------MultipleMatching
+    dictionary
+        A dictionary comprised of ``Hospital, List[Player]`` pairs.
+    """
+
+    def __init__(self, dictionary):
+        if not dictionary:
+            raise ValueError("Invalid input: the arg 'dictionary' must not be empty.")
+        super().__init__(dictionary)
+        self._dataframe = pandas.DataFrame(dictionary)
+
+    def __setitem__(self, player, new):
+        """Set a player's match and match each of them to the player.
+
+        First check if the player is present, and that the new match is
+        a valid collection of players.
+        @type player: matching.players.Player
+        @type new: tuple
+        """
+        self._check_player_in_keys(player)
+        self._check_new_valid_type(new, (list, tuple))
+        for other in new:
+            self._check_new_valid_type(other, Player)
+
+        player.matching = new
+        for other in new:
+            other.matching = player
+
+        self._data[player] = new
+
+    def set(self, player, new):

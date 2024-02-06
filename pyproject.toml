@@ -29,7 +29,8 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 dependencies = [
-    "numpy>=1.19.2"
+    "numpy>=1.19.2",
+    "pandas>=2.2.0"
 ]
 dynamic = ["version"]
 
